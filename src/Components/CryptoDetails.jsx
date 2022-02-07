@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React from "react";
 import HTMLReactParser from "html-react-parser";
 import { useParams } from "react-router-dom";
 import millify from "millify";
-import { Col, Row, Typography, Select } from "antd";
+import { Col, Row, Typography } from "antd";
 import {
   MoneyCollectOutlined,
   DollarCircleOutlined,
@@ -13,31 +13,18 @@ import {
   CheckOutlined,
   NumberOutlined,
 } from "@ant-design/icons";
-import LineChart from "./LineChart";
 
-import {
-  useGetCryptoDetailsQuery,
-  useGetCryptoHistoryQuery,
-} from "../services/cryptoApi";
+import { useGetCryptoDetailsQuery } from "../services/cryptoApi";
 
 const { Title, Text } = Typography;
-const { Option } = Select;
 
 const CryptoDetails = () => {
   const { coinId } = useParams();
-  const [timePeriod, settimePeriod] = useState("7d");
   const { data, isFetching } = useGetCryptoDetailsQuery(coinId); //provides data about a specific crypto currency
-  const { data: coinHistory } = useGetCryptoHistoryQuery({
-    coinId,
-    timePeriod,
-  }); //provides data about a specific crypto currency for chart
+
   const cryptoDetails = data?.data?.coin;
 
-  console.log(coinHistory);
-
   if (isFetching) return "Loading...";
-
-  const time = ["3h", "24h", "7d", "30d", "1y", "3m", "3y", "5y"];
 
   const stats = [
     {
@@ -103,30 +90,6 @@ const CryptoDetails = () => {
 
   return (
     <Col className="coin-detail-container">
-      <Col className="coin-heading-container">
-        <Title level={2} className="coin-name">
-          {data?.data?.coin.name} ({data?.data?.coin.symbol}) Price
-        </Title>
-        <p>
-          {data?.data?.coin.name} live price in US Dollar (USD). View value
-          statistics, market cap and supply.
-        </p>
-      </Col>
-      <Select
-        defaultValue="7d"
-        className="select-timePeriod"
-        placeholder="Select timePeriod"
-        onChange={(value) => settimePeriod(value)}
-      >
-        {time.map((date) => (
-          <Option key={date}>{date}</Option>
-        ))}
-      </Select>
-      <LineChart
-        coinHistory={coinHistory}
-        currentPrice={millify(data?.data?.coin?.price)}
-        coinName={data?.data?.coin?.name}
-      />
       <Col className="stats-container">
         <Col className="coin-value-statistics">
           <Col className="coin-value-statistics-heading">
